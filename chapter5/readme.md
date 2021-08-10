@@ -48,3 +48,50 @@ https://docs.aws.amazon.com/ja_jp/lambda/latest/dg/configuration-envvars.html
 2. windowsはjqをリネームして環境変数に
 3. curl -sX GET https://i3w8zvfye4.execute-api.ap-northeast-1.amazonaws.com/staging/idols | .jq
 
+- simpleなgetItem
+```go
+input := &dynamodb.GetItemInput{
+        TableName: aws.String("UserName"),
+        Key: map[string]*dynamodb.AttributeValue{
+            "UserID": {
+                N: aws.String("1"),
+            },
+            "Date": {
+                S: aws.String("20171215"),
+            },
+        },
+    }
+
+    result, err := svc.GetItem(input)
+    if err != nil {
+        fmt.Println("[GetItem Error]", err)
+        return
+    }
+```
+https://qiita.com/sakayuka/items/4af7fead94d589716f4d
+
+- jqをつかってGetItemで返ってきたjsonを整形する  
+Nameが欲しいとき
+> curl -sX GET https://i3w8zvfye4.execute-api.ap-northeast-1.amazonaws.com/staging/idols/6 | jq ".[]|.Name|.S"
+
+- lambda 環境変数設定
+```cmd
+### 1行で打ち込むこと
+aws lambda update-function-configuration --function-name InsertIdole --environment Variables={TABLE_NAME=Idols}
+```
+
+- lambda zipコードのアップデート
+> aws lambda update-function-code --function-name InsertIdole --zip-file fileb://./insertupdateitem.zip
+
+- json unmarshal で 文字エラーが起きるケース(curl でpostできない)
+### かなり手こずるポイント
+> invalid character '\'' looking for beginning of value
+
+https://qiita.com/Syuparn/items/233c5b38164b5ea2fdf6
+
+windows環境はダブルクオートにエスケープをつける必要があるみたい
+> {\\"id\\":\\"8\\",\\"name\\":\\"tukioka kogane\\"}
+
+#### ダブルクォーテーションのエスケープ処理
+#### 全体をダブルクォーテーションで括る
+[この2点はWindows環境のコマンドプロンプトからCurl接続する場合は注意しておきたい点](http://dim5.net/windows-server/curl-jsondata-postmethod.html)

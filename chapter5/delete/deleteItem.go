@@ -17,38 +17,39 @@ type Idol struct {
 	Name string `json:"name"`
 }
 
-func findAll() (events.APIGatewayProxyResponse, error) {
+func deleteItem(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var idol Idol
+	err := json.Unmarshal([]byte(request.Body), &idol)
+	if err != nil {
+		return events.APIGatewayProxyResponse{
+			StatusCode: 400,
+			Body:       err.Error(),
+		}, nil
+	}
 
 	sess := session.New(&aws.Config{Region: aws.String("ap-northeast-1")})
 	db := dynamodb.New(sess)
 	table_name := "Idols"
 
-	params := &dynamodb.ScanInput{
-		TableName: aws.String(table_name), // Required
-		AttributesToGet: []*string{
-			aws.String("ID"),   // Required
-			aws.String("Name"), // Required
-			// More values...
+	input := &dynamodb.DeleteItemInput{
+		TableName: aws.String(table_name),
+		Key: map[string]*dynamodb.AttributeValue{
+			"ID": {
+				S: aws.String(idol.ID),
+			},
 		},
 	}
-	res, err := db.Scan(params)
+	// Execute.
+	res, err := db.DeleteItem(input)
 
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
-			Body:       "Error while scanning DynamoDB",
+			Body:       "Error while delete item to DynamoDB" + err.Error(),
 		}, nil
 	}
 
-	idols := make([]Idol, 0)
-	for _, item := range res.Items {
-		idols = append(idols, Idol{
-			ID:   *item["ID"].S,
-			Name: *item["Name"].S,
-		})
-	}
-
-	response, err := json.Marshal(idols)
+	response, err := json.Marshal(res)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
@@ -66,5 +67,5 @@ func findAll() (events.APIGatewayProxyResponse, error) {
 }
 
 func main() {
-	lambda.Start(findAll)
+	lambda.Start(deleteItem)
 }

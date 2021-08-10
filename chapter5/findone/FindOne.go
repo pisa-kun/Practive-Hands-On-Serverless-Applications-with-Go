@@ -17,22 +17,23 @@ type Idol struct {
 	Name string `json:"name"`
 }
 
-func findAll() (events.APIGatewayProxyResponse, error) {
+func findOne(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	id := request.PathParameters["id"]
 
 	sess := session.New(&aws.Config{Region: aws.String("ap-northeast-1")})
 	db := dynamodb.New(sess)
 	table_name := "Idols"
 
-	params := &dynamodb.ScanInput{
-		TableName: aws.String(table_name), // Required
-		AttributesToGet: []*string{
-			aws.String("ID"),   // Required
-			aws.String("Name"), // Required
-			// More values...
+	params := &dynamodb.GetItemInput{
+		TableName: aws.String(table_name),
+		Key: map[string]*dynamodb.AttributeValue{
+			"ID": {
+				S: aws.String(id),
+			},
 		},
 	}
-	res, err := db.Scan(params)
 
+	res, err := db.GetItem(params)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
@@ -40,15 +41,15 @@ func findAll() (events.APIGatewayProxyResponse, error) {
 		}, nil
 	}
 
-	idols := make([]Idol, 0)
-	for _, item := range res.Items {
-		idols = append(idols, Idol{
-			ID:   *item["ID"].S,
-			Name: *item["Name"].S,
-		})
-	}
+	// idols := make([]Idol, 0)
+	// for _, item := range res.Items {
+	// 	idols = append(idols, Idol{
+	// 		ID:   *item["ID"].S,
+	// 		Name: *item["Name"].S,
+	// 	})
+	// }
 
-	response, err := json.Marshal(idols)
+	response, err := json.Marshal(res)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
@@ -66,5 +67,5 @@ func findAll() (events.APIGatewayProxyResponse, error) {
 }
 
 func main() {
-	lambda.Start(findAll)
+	lambda.Start(findOne)
 }
