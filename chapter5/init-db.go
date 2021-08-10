@@ -8,9 +8,9 @@ import (
 	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+
 )
 
 type Idol struct {
@@ -20,13 +20,7 @@ type Idol struct {
 
 func main() {
 
-	//bucket := "test"
-
-	creds := credentials.NewStaticCredentials(accessKey, secretKey, "")
-	sess, _ := session.NewSession(&aws.Config{
-		Credentials: creds,
-		Region:      aws.String("ap-northeast-1")},
-	)
+	sess := session.New(&aws.Config{Region: aws.String("ap-northeast-1")})
 	db := dynamodb.New(sess)
 	table_name := "Idols"
 
