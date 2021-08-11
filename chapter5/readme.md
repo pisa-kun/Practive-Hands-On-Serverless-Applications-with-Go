@@ -89,9 +89,6 @@ aws lambda update-function-configuration --function-name InsertIdole --environme
 
 https://qiita.com/Syuparn/items/233c5b38164b5ea2fdf6
 
-windows環境はダブルクオートにエスケープをつける必要があるみたい
-> {\\"id\\":\\"8\\",\\"name\\":\\"tukioka kogane\\"}
-
 #### ダブルクォーテーションのエスケープ処理
 #### 全体をダブルクォーテーションで括る
 [この2点はWindows環境のコマンドプロンプトからCurl接続する場合は注意しておきたい点](http://dim5.net/windows-server/curl-jsondata-postmethod.html)
