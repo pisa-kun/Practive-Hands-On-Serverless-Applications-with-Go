@@ -10,19 +10,19 @@ phases:
     commands:
       - mkdir -p "/go/src/$(dirname ${PACKAGE})"
       - ln -s "${CODEBUILD_SRC_DIR}" "/go/src/${PACKAGE}"
-      - go get -u github.com/golang/lint/golint
+      #- go get -u github.com/golang/lint/golint
 
   pre_build:
     commands:
       - cd "/go/src/${PACKAGE}"
       - go get -t ./...
-      - golint -set_exit_status
+      #- golint -set_exit_status
       - go vet .
       - go test .
 
   build:
     commands:
-      - GOOS=linux go build -o c main.go
+      - GOOS=linux go build -o $BINNAME main.go
       - zip $CODEBUILD_RESOLVED_SOURCE_VERSION.zip $BINNAME
       - aws s3 cp $CODEBUILD_RESOLVED_SOURCE_VERSION.zip s3://$S3_BUCKET/
 

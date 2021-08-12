@@ -9,8 +9,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+
 )
 
+// Idol entity
 type Idol struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
@@ -23,11 +25,10 @@ func findAll() (events.APIGatewayProxyResponse, error) {
 	table_name := "Idols"
 
 	params := &dynamodb.ScanInput{
-		TableName: aws.String(table_name), // Required
+		TableName: aws.String(table_name),
 		AttributesToGet: []*string{
-			aws.String("ID"),   // Required
-			aws.String("Name"), // Required
-			// More values...
+			aws.String("ID"),
+			aws.String("Name"),
 		},
 	}
 	res, err := db.Scan(params)
