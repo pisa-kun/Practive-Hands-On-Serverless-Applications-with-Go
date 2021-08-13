@@ -86,3 +86,41 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 ```
 
 [参考](https://qiita.com/ksh-fthr/items/840ae54472892a87f48d)
+
+このAPIServiceを使用する例
+```ts
+    this.idolApiService.findAll()
+    .then(
+      (response) => {
+        response.forEach( (idol:any) => {
+          this.idols.push(new Idol(idol.name, "description"))
+        });
+      }
+    )
+    .catch(
+      (error:any) => console.log(error)
+    );
+```
+
+- [Angular]"No provider for xxx"エラーが発生するときの対処法
+
+HttpClientを追加したばかりのころ、ヘッダー含めて何も表示されない状態になった。  
+[公式](https://angular.jp/guide/http#httpclient)ドキュメント曰く、app.module.tsにHttpClientModuleをインポートする必要がある
+```ts
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule
+  ],
+```
+
+- "Access-Control-Allow-Origin": "*" つけてもエラーになる件
+
+> has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+~~ワイルドカードだとポリシー違反になる。~~
+
+上手くいかなかったので、[Cross Domain](https://chrome.google.com/webstore/detail/cross-domain-cors/mjhpgnbimicffchbodmgfnemoghjakai/related?hl=ja)というのをインスコすればCORSのエラーはなくなった
