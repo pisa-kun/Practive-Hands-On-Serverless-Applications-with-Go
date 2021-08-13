@@ -63,3 +63,26 @@ cssを基本的に選択する
               "./node_modules/bootstrap/dist/js/bootstrap.js"
             ] 
 ```
+
+- movie-item.components.ts でのidolフィールド
+
+フィールド変数を初期化しないとコンパイルできないので、とりあえず空文字で初期化しておく
+```ts
+export class IdolItemComponent implements OnInit {
+  @Input()
+  
+  public idol:Idol;
+  constructor() {
+    this.idol = new Idol("","","");
+  }
+```
+
+- angular/http パッケージ
+
+下記に変更されてる
+```ts
+// REST クライアント実装ののためのサービスを import ( Angular 5.0.0 以降はこちらを使う )
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+```
+
+[参考](https://qiita.com/ksh-fthr/items/840ae54472892a87f48d)

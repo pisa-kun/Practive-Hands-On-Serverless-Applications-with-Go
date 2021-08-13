@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { IdolItemComponent } from './components/idol-item/idol-item.component';
 import { ListIdolsComponent } from './components/list-idols/list-idols.component';
+import { IdolApiService } from './services/idol-api.service';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,9 @@ import { ListIdolsComponent } from './components/list-idols/list-idols.component
     BrowserModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [
+    IdolApiService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
