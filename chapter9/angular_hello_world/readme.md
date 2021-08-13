@@ -26,3 +26,40 @@ CREATE src/app/components/navbar/navbar.component.spec.ts (626 bytes)
 CREATE src/app/components/navbar/navbar.component.ts (276 bytes)
 CREATE src/app/components/navbar/navbar.component.scss (0 bytes)
 ```
+
+- component追加時のお作法みたいなもの
+
+tsファイルのselectorの名前を変えて、app.component.htmlに追加する
+```ts
+@Component({
+  selector: 'idol-item',
+  templateUrl: './idol-item.component.html',
+  styleUrls: ['./idol-item.component.scss']
+})
+```
+
+- ng new
+
+cssを基本的に選択する
+```
+ ng new frontend
+? Would you like to add Angular routing? Yes
+? Which stylesheet format would you like to use? (Use arrow keys)
+> CSS
+  SCSS   [ https://sass-lang.com/documentation/syntax#scss                ]
+  Sass   [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]
+  Less   [ http://lesscss.org                                             ]
+```
+
+[参考ページ](https://www.techiediaries.com/angular-bootstrap/)
+
+```json
+            "styles": [
+              "./node_modules/bootstrap/dist/css/bootstrap.css",
+              "src/styles.css"
+              ],
+            "scripts": [
+              "./node_modules/jquery/dist/jquery.js",
+              "./node_modules/bootstrap/dist/js/bootstrap.js"
+            ] 
+```
