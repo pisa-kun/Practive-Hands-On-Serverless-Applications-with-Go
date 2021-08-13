@@ -92,11 +92,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
     this.idolApiService.findAll()
     .then(
       (response) => {
-        response.forEach( (idol:any) => {
+        this.param = response;
+        // bodyの一覧を格納
+        this.messageInfoList = this.param.body;
+        console.log(this.messageInfoList);
+        const obj = JSON.parse(this.messageInfoList);
+        console.log(obj);
+        obj.forEach( (idol:any) => {
           this.idols.push(new Idol(idol.name, "description"))
         });
-      }
-    )
     .catch(
       (error:any) => console.log(error)
     );
@@ -124,3 +128,25 @@ import { HttpClientModule } from '@angular/common/http';
 ~~ワイルドカードだとポリシー違反になる。~~
 
 上手くいかなかったので、[Cross Domain](https://chrome.google.com/webstore/detail/cross-domain-cors/mjhpgnbimicffchbodmgfnemoghjakai/related?hl=ja)というのをインスコすればCORSのエラーはなくなった
+
+- 200P手順7
+
+ソースコードの大きな改変が必要
+#### dynamoDBのcoverとdescriptionについて
+
+goのscanでテーブルにアクセスする際に、キーが存在しない場合例外になる。
+panicで例外捕捉するか、テーブルに必ずキーを追加して空文字にする必要がある。
+
+下記のようなエラー
+```json
+{
+  "errorMessage": "runtime error: invalid memory address or nil pointer dereference",
+  "errorType": "errorString",
+  "stackTrace": [
+    {
+      "path": "github.com/aws/aws-lambda-go@v1.26.0/lambda/errors.go",
+      "line": 39,
+      "label": "lambdaPanicResponse"
+    },
+    {
+```

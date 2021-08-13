@@ -71,7 +71,7 @@ export class ListIdolsComponent implements OnInit {
         const obj = JSON.parse(this.messageInfoList);
         console.log(obj);
         obj.forEach( (idol:any) => {
-          this.idols.push(new Idol(idol.name, "description"))
+          this.idols.push(new Idol(idol.name, idol.description, idol.cover))
         });
         // this.param = response;
         // this.messageInfoList = this.param.messages;

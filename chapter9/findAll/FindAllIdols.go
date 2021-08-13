@@ -12,8 +12,10 @@ import (
 )
 
 type Idol struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Cover       string `json:"cover"`
+	Description string `json:"description"`
 }
 
 func findAll() (events.APIGatewayProxyResponse, error) {
@@ -27,6 +29,8 @@ func findAll() (events.APIGatewayProxyResponse, error) {
 		AttributesToGet: []*string{
 			aws.String("ID"),   // Required
 			aws.String("Name"), // Required
+			aws.String("Cover"),
+			aws.String("Description"),
 			// More values...
 		},
 	}
@@ -41,8 +45,10 @@ func findAll() (events.APIGatewayProxyResponse, error) {
 	idols := make([]Idol, 0)
 	for _, item := range res.Items {
 		idols = append(idols, Idol{
-			ID:   *item["ID"].S,
-			Name: *item["Name"].S,
+			ID:          *item["ID"].S,
+			Name:        *item["Name"].S,
+			Cover:       *item["Cover"].S,
+			Description: *item["Description"].S,
 		})
 	}
 
