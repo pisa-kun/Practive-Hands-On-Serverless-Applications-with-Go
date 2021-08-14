@@ -150,3 +150,67 @@ panicで例外捕捉するか、テーブルに必ずキーを追加して空文
     },
     {
 ```
+
+- postコマンド
+
+> C:\Users\pisa0>curl -X POST -H "Content-Type:application/json" -d " {\"id\":\"14\",\"name\":\"Amana Osaki\",\"cover\":\"https://shinycolors.idolmaster.jp/pc/static/img/download/wallpaper/icon_alstroemeria_amana.jpg\",\"description\":\"大崎 姉妹の双子の妹。誰とでも分け隔てなく接する天真爛漫なギャル。今しかできないことを全力で楽しみたい今ドキの女の子。高校2\"}" https://i3w8zvfye4.execute-api.ap-northeast-1.amazonaws.com/staging/idols
+{"Attributes":null,"ConsumedCapacity":null,"ItemCollectionMetrics":null}
+
+コマンドプロンプトからのcurlだと日本語が文字化けする
+
+- ng-bootstrapのエラー
+
+[参考ページ](https://stackoverflow.com/questions/60824732/after-installing-material-design-i-am-unable-to-compile-the-angular-code-due-to)
+>Error: Failed to compile entry-point @ng-bootstrap/ng-bootstrap (module as esm5) due to compilation errors:
+
+1.一旦npm uninstall でbootstrapを削除
+2.npm `add`で追加する
+3.NgbModule.forRoot()を app.module.tsから削除する
+
+- "item" is not a know element と表示されたとき
+
+```ts
+
+ng generateしたら必ず.tsファイルの slectorの名前を変えておこう
+
+@Component({
+  selector: 'new-idol',
+  templateUrl: './new-idol.component.html',
+  styleUrls: ['./new-idol.component.css']
+})
+```
+
+- postのパラメータ
+
+204ページのpostする movieはプロパティ3つでIdフィールドがない。この状態だとlambdaで引数エラーが返ってくるはず・・・
+
+```json
+{
+    "id":"99",
+  "name": "Amana Osaki",
+  "cover": "https://shinycolors.idolmaster.jp/pc/static/img/download/wallpaper/icon_alstroemeria_amana.jpg",
+  "description": "大崎姉妹の双子の妹。誰とでも分け隔てなく接する天真爛漫なギャル。今しかできないことを全力で楽しみたい今ドキの女の子。高校2年生。"
+}
+```
+
+クラスのフィールド変数を追加して、json.Marshalする前にIdを追加する
+
+```ts
+    constructor(name: string, description: string, cover?: string, id?: string){
+        this.name = name;
+        this.description = description;
+        this.cover = cover ? cover : "http://via.placeholder.com/185x287";
+        this.id = id ? id : "999";
+    }
+
+  insert(idol: Idol){
+    idol.addId("114");
+    console.log("insert +", idol)
+    return this.http
+      .post(environment.api, JSON.stringify(idol))
+      // .map(res => {
+      //   return res
+      // })
+    }
+    
+```

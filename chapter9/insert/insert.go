@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -9,7 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-
 )
 
 type Idol struct {
@@ -19,41 +19,49 @@ type Idol struct {
 	Description string `json:"description"`
 }
 
-func findAll() (events.APIGatewayProxyResponse, error) {
+func insert(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var idol Idol
+	err := json.Unmarshal([]byte(request.Body), &idol)
+	if err != nil {
+		return events.APIGatewayProxyResponse{
+			StatusCode: 400,
+			Body:       "Invalid payload",
+		}, nil
+	}
 
 	sess := session.New(&aws.Config{Region: aws.String("ap-northeast-1")})
 	db := dynamodb.New(sess)
 	table_name := "Idols"
 
-	params := &dynamodb.ScanInput{
-		TableName: aws.String(table_name), // Required
-		AttributesToGet: []*string{
-			aws.String("ID"),   // Required
-			aws.String("Name"), // Required
-			aws.String("Cover"),
-			aws.String("Description"),
-			// More values...
+	// PutItem
+	putParams := &dynamodb.PutItemInput{
+		TableName: aws.String(table_name),
+		Item: map[string]*dynamodb.AttributeValue{
+			"ID": {
+				S: aws.String(idol.ID),
+			},
+			"Name": {
+				S: aws.String(idol.Name),
+			},
+			"Cover": {
+				S: aws.String(idol.Cover),
+			},
+			"Description": {
+				S: aws.String(idol.Description),
+			},
 		},
 	}
-	res, err := db.Scan(params)
-	if err != nil {
+
+	putItem, putErr := db.PutItem(putParams)
+	if putErr != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
-			Body:       "Error while Scanning DynamoDB",
+			Body:       "Error while insert to DynamoDB" + putErr.Error(),
 		}, nil
 	}
+	fmt.Println(putItem)
 
-	idols := make([]Idol, 0)
-	for _, item := range res.Items {
-		idols = append(idols, Idol{
-			ID:          *item["ID"].S,
-			Name:        *item["Name"].S,
-			Cover:       *item["Cover"].S,
-			Description: *item["Description"].S,
-		})
-	}
-
-	response, err := json.Marshal(idols)
+	response, err := json.Marshal(putItem)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
@@ -64,13 +72,12 @@ func findAll() (events.APIGatewayProxyResponse, error) {
 	return events.APIGatewayProxyResponse{
 		StatusCode: 200,
 		Headers: map[string]string{
-			"Content-Type":                "application/json",
-			"Access-Control-Allow-Origin": "*",
+			"Content-Type": "application/json",
 		},
 		Body: string(response),
 	}, nil
 }
 
 func main() {
-	lambda.Start(findAll)
+	lambda.Start(insert)
 }

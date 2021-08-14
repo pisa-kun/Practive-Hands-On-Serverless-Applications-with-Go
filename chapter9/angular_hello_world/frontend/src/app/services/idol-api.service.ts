@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 // REST クライアント実装ののためのサービスを import ( Angular 5.0.0 以降はこちらを使う )
 import { HttpClient } from '@angular/common/http';
-//import { Idol } from '../idols/idol';
+import { Idol } from '../models/idol';
 
 @Injectable()
 export class IdolApiService {
@@ -32,6 +32,16 @@ export class IdolApiService {
     .catch(this.errorHandler);
   }
 
+  insert(idol: Idol){
+    idol.addId("114");
+    console.log("insert +", idol)
+    return this.http
+      .post(environment.api, JSON.stringify(idol))
+      // .map(res => {
+      //   return res
+      // })
+    }
+    
     /**
    * REST-API 実行時のエラーハンドラ
    * (toPromise.then((res) =>{}) を利用する場合のコード)
