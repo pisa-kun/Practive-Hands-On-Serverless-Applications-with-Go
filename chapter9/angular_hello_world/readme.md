@@ -214,3 +214,32 @@ ng generateしたら必ず.tsファイルの slectorの名前を変えておこ�
     }
     
 ```
+
+- s3バケット作成の失敗例
+
+大文字をbucket名に含めれない
+> aws s3 mb s3://ServerlessApplicationMorichan.com
+> make_bucket failed: s3://ServerlessApplicationMorichan.com An error occurred (InvalidBucketName) when calling the CreateBucket operation: The specified bucket is not valid.
+
+```json
+{
+  "Id": "Policy1628968528756",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1628968526017",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::serverlessmorichan.com/*",
+      "Principal": "*"
+    }
+  ]
+}
+```
+
+- route53の設定まわり
+
+ここを参考
+https://blog.kozakana.net/2019/03/aws-dns-validate/
