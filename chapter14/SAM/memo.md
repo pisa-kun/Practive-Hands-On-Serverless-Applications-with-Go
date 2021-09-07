@@ -1,0 +1,1 @@
+> sam init --name api --runtime go1.x
